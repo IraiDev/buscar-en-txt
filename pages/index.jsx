@@ -57,7 +57,7 @@ export default function Home() {
 
     }
 
-    const raadFile = (e) => {
+    const readFile = (e) => {
 
         const file = e.target.files[0]
 
@@ -82,26 +82,35 @@ export default function Home() {
 
     const searchOnFile = () => {
 
+        if (value.desde === '' || value.hasta === '') {
+            setTextFind('Los parametros DESDE y/o HASTA son necesrios para buscar, llenelos por favor.')
+            return
+        }
+
+        if (fileContent === ''){
+            setTextFind('archivo seleccionado esta vacio o no se selecciono archivo.')
+            return
+        }
+
         const p1 = fileContent.indexOf(value.desde)
+
+        if(p1 === -1) {
+            setTextFind('No se encontro una coincidencia con el parametro DESDE.')
+            return
+        }
 
         let content = fileContent.slice(p1)
 
         const p2 = content.indexOf(value.hasta)
 
+        if(p2 === -1) {
+            setTextFind('No se encontro una coincidencia con el parametro HASTA.')
+            return
+        }
+
         content = content.slice(0, p2)
 
         setTextFind(content)
-
-        console.log(content);
-
-        if(p1 === -1) {
-            
-            console.log('no se encontro el valor buscado')
-            return
-            
-        }
-
-        console.log(p1, p2)
 
     }
 
@@ -124,7 +133,7 @@ export default function Home() {
                     onChange={(e) => setValue({ ...value, hasta: e.target.value})}
                 />
 
-                <File onChange={raadFile} />
+                <File onChange={readFile} />
 
                 <section className="flex justify-between gap-2 mt-10">
 
@@ -147,7 +156,14 @@ export default function Home() {
 
             <section className='max-w-3xl mt-10'>
                 <h3 className='text-white'>resultado:</h3>
-                <p className='text-white/60 mt-2 px-5 max-h-96 overflow-auto'> { textFind } </p>
+                <p 
+                    className={`
+                        mt-2 px-5 max-h-96 overflow-auto
+                        ${fileContent === '' || value.desde === '' || value.hasta === '' ? 'text-red-400' : 'text-white/60'}
+                    `}
+                > 
+                    { textFind } 
+                </p>
             </section>
 
         </div>
